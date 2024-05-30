@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Lista {
+public class Lista {//oredenamiento por peso por medio de insercion
    private  List<Paqueteria>serviEntrega;
 
     public List<Paqueteria> getServiEntrega() {
@@ -134,18 +134,19 @@ public class Lista {
         }
     }
 
-    public  String  buscarPaquetesPorCedulaYEstado(String cedula, String estado){
+    public  String  buscarPaquetesPortranking(int traking){
 
         String mensaje = "Resultados de búsqueda:\n";
 
         for (Paqueteria paquete : serviEntrega) {
-            if (paquete.getCedulaReceptor().equals(cedula) && paquete.getEstado().equals(estado)) {
+            if (paquete.getTracking() == traking) {
                 mensaje += paquete.toString() + "\n";
 
             }
         }
             return  mensaje;
     }
+
 
 
 

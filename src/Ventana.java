@@ -3,6 +3,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Ventana {
     private JPanel Ventana;
@@ -26,6 +28,13 @@ public class Ventana {
     private JTextField textField5;
     private JButton buscarButton;
     private JTextArea textArea1;
+    private JButton ordenarPorBurbujaButton;
+    private JButton ordenarPorInsercionPesoButton;
+    private JList list2;
+    private JList list3;
+    private JButton busquedaBinariaButton;
+    private JTextArea textArea2;
+    private JTextArea textArea3;
     private Lista paquete =new Lista();
 
     public Ventana() {
@@ -156,16 +165,73 @@ public class Ventana {
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cedula = textField4.getText();
-                String estado = textField5.getText();
+                int track  = Integer.parseInt(textField4.getText());
 
-                if (!cedula.isEmpty() && !estado.isEmpty()) {
-                    String resultadoBusqueda = paquete.buscarPaquetesPorCedulaYEstado(cedula, estado);
+
+                   String resultadoBusqueda = paquete.buscarPaquetesPortranking(track);
                     textArea1.setText(resultadoBusqueda);
+
+            }
+        });
+        ordenarPorBurbujaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               // textArea2.setText("");
+                DefaultListModel<Paqueteria> originalListModel = new DefaultListModel<>();
+                for (Paqueteria p : paquete.getServiEntrega()) {
+                    originalListModel.addElement(p);
+                    //textArea2.append(p.toString() + "\n");
+                    //textArea2.append("------------------------\n");
+                }
+                list2.setModel(originalListModel);
+                ordenarBurbuja();
+                DefaultListModel<Paqueteria> sortedListModel = new DefaultListModel<>();
+               // textArea3.setText("");
+                for (Paqueteria p : paquete.getServiEntrega()) {
+                    sortedListModel.addElement(p);
+                   // textArea3.append(p.toString() + "\n");
+                    //textArea3.append("------------------------");
+                }
+                list3.setModel(sortedListModel);
+                JOptionPane.showMessageDialog(null, "Lista ordenada por peso.");
+            }
+        });
+        ordenarPorInsercionPesoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //textArea2.append("");
+                DefaultListModel<Paqueteria> originalListModel = new DefaultListModel<>();
+                for (Paqueteria p : paquete.getServiEntrega()) {
+                    //textArea2.append(p.toString() + "\n");
+                    originalListModel.addElement(p);
+                }
+                list2.setModel(originalListModel);
+                ordenarInsercion();
+                //textArea3.append("");
+                DefaultListModel<Paqueteria> sortedListModel = new DefaultListModel<>();
+                for (Paqueteria p:paquete.getServiEntrega()){
+                    sortedListModel.addElement(p);
+                    //textArea3.append((p.toString())+"\n");
+                    //textArea3.append("------------------------\n");
+                }
+                list3.setModel(sortedListModel);
+                JOptionPane.showMessageDialog(null, "Lista ordenada por peso.");
+            }
+        });
+        busquedaBinariaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int track = Integer.parseInt(textField4.getText());
+                Paqueteria result = buscarBinario(track);
+                if (result != null) {
+                    //System.out.println("Paqueteria encontrada: " + result);
+                    JOptionPane.showMessageDialog(null,"Encontrado: ");
+                    textArea1.setText(result.toString());
                 } else {
-                    JOptionPane.showMessageDialog(null, "Por favor, ingrese la cédula y el estado para realizar la búsqueda.");
+                   JOptionPane.showMessageDialog(null,"No encontrado");
                 }
             }
+
         });
     }
 
@@ -195,6 +261,64 @@ public class Ventana {
             dlm.addElement(e);
         }
         list1.setModel(dlm);
+    }
+    public void ordenarBurbuja(){
+        //crear una lista auxliar y a esa lista ordeanr y mostrar
+        List<Paqueteria>auxiliar = new ArrayList<>(paquete.getServiEntrega());
+        for(int i=0;i<auxiliar.size()-1;i++){
+            for(int j=0;j<auxiliar.size()-i-1;j++){
+                if(auxiliar.get(j+1).getTracking()<auxiliar.get(j).getTracking()){
+                    Paqueteria aux =auxiliar.get(j+1);
+                    auxiliar.set(j+1,auxiliar.get(j));
+                    auxiliar.set(j,aux);
+                }
+            }
+            paquete.setServiEntrega(auxiliar);
+        }
+
+    }
+
+    public void ordenarInsercion(){
+        List<Paqueteria>auxiliar = new ArrayList<>(paquete.getServiEntrega());
+        for(int i=1;i<auxiliar.size();i++){
+            Paqueteria e =auxiliar.get(i);
+            int j =i-1;
+            while (j>=0 && auxiliar.get(j).getPeso()>e.getPeso()){
+                auxiliar.set(j+1,auxiliar.get(j));
+                j=j-1;
+            }
+            auxiliar.set(j+1,e);
+
+        }
+        paquete.setServiEntrega(auxiliar);
+    }
+    public Paqueteria buscarBinario(int tracking) {
+        List<Paqueteria> auxiliar = new ArrayList<>(paquete.getServiEntrega());
+        ordenarInsercion();
+
+        int inicio = 0;
+        int fin = auxiliar.size() - 1;
+
+        while (inicio <= fin) {
+            int medio = (inicio + fin) / 2;
+            Paqueteria actual = auxiliar.get(medio);
+
+            if (actual.getTracking() == tracking) {
+
+                return actual;
+            }
+
+            if (actual.getTracking() < tracking) {
+                inicio= medio + 1;
+            } else {
+                inicio = medio - 1;
+            }
+        }
+
+        return null;
+
+
+
     }
 
     public static void main(String[] args) {
