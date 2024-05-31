@@ -34,7 +34,8 @@ public class Ventana {
     private JList list3;
     private JButton busquedaBinariaButton;
     private JTextArea textArea2;
-    private JTextArea textArea3;
+    private JButton buscarButton1;
+    private JComboBox comboestadopedido;
     private Lista paquete =new Lista();
 
     public Ventana() {
@@ -43,20 +44,20 @@ public class Ventana {
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               try{
-                   paquete.adicionarelemnto(new Paqueteria(Integer.parseInt(spinner1.getValue().toString()),
-                           Double.parseDouble(textField1.getText()),
-                           comboBox1.getSelectedItem().toString(),
-                           comboBox2.getSelectedItem().toString(),
-                           textField2.getText().toString()));
-                   JOptionPane.showMessageDialog(null,"Paquete Agregado");
-                   limpiarDatos();
-                   System.out.println(paquete.listarPaquetes());
-                   llenarJlist();
-               } catch (Exception ex){
-                   JOptionPane.showMessageDialog(null,ex.getMessage());
+                try{
+                    paquete.adicionarelemnto(new Paqueteria(Integer.parseInt(spinner1.getValue().toString()),
+                            Double.parseDouble(textField1.getText()),
+                            comboBox1.getSelectedItem().toString(),
+                            comboBox2.getSelectedItem().toString(),
+                            textField2.getText().toString()));
+                    JOptionPane.showMessageDialog(null,"Paquete Agregado");
+                    limpiarDatos();
+                    System.out.println(paquete.listarPaquetes());
+                    llenarJlist();
+                } catch (Exception ex){
+                    JOptionPane.showMessageDialog(null,ex.getMessage());
 
-               }
+                }
             }
         });
 
@@ -76,10 +77,10 @@ public class Ventana {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                   // String ciudad = JOptionPane.showInputDialog(null, "Ingrese la ciudad:");
-                    String ciudad =comboBox3.getSelectedItem().toString();
-                    double pesoPorCiudad = paquete.sumarTotalPesoCiudad(ciudad);
-                    JOptionPane.showMessageDialog(null, "Total peso por ciudad " + ciudad + ": " + pesoPorCiudad);
+                // String ciudad = JOptionPane.showInputDialog(null, "Ingrese la ciudad:");
+                String ciudad =comboBox3.getSelectedItem().toString();
+                double pesoPorCiudad = paquete.sumarTotalPesoCiudad(ciudad);
+                JOptionPane.showMessageDialog(null, "Total peso por ciudad " + ciudad + ": " + pesoPorCiudad);
 
             }
         });
@@ -102,17 +103,17 @@ public class Ventana {
         modificarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            try{
-                int tracking = Integer.parseInt(spinner1.getValue().toString());
-                Paqueteria nuevo = new Paqueteria(tracking, Double.parseDouble(textField1.getText()),comboBox1.getSelectedItem().toString(),comboBox2.getSelectedItem().toString(),textField2.getText().toString());
-                paquete.modificarDatos(tracking,nuevo);
-                JOptionPane.showMessageDialog(null,"Modificacado correctamente");
-                limpiarDatos();
-                llenarJlist();
+                try{
+                    int tracking = Integer.parseInt(spinner1.getValue().toString());
+                    Paqueteria nuevo = new Paqueteria(tracking, Double.parseDouble(textField1.getText()),comboBox1.getSelectedItem().toString(),comboBox2.getSelectedItem().toString(),textField2.getText().toString());
+                    paquete.modificarDatos(tracking,nuevo);
+                    JOptionPane.showMessageDialog(null,"Modificacado correctamente");
+                    limpiarDatos();
+                    llenarJlist();
 
-            }catch (Exception ex){
-                JOptionPane.showMessageDialog(null,"Error: "+ex.getMessage());
-            }
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null,"Error: "+ex.getMessage());
+                }
             }
         });
         totalPaquetesEstadoButton.addActionListener(new ActionListener() {
@@ -168,15 +169,15 @@ public class Ventana {
                 int track  = Integer.parseInt(textField4.getText());
 
 
-                   String resultadoBusqueda = paquete.buscarPaquetesPortranking(track);
-                    textArea1.setText(resultadoBusqueda);
+                String resultadoBusqueda = paquete.buscarPaquetesPortranking(track);
+                textArea1.setText(resultadoBusqueda);
 
             }
         });
         ordenarPorBurbujaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               // textArea2.setText("");
+                // textArea2.setText("");
                 DefaultListModel<Paqueteria> originalListModel = new DefaultListModel<>();
                 for (Paqueteria p : paquete.getServiEntrega()) {
                     originalListModel.addElement(p);
@@ -186,10 +187,10 @@ public class Ventana {
                 list2.setModel(originalListModel);
                 ordenarBurbuja();
                 DefaultListModel<Paqueteria> sortedListModel = new DefaultListModel<>();
-               // textArea3.setText("");
+                // textArea3.setText("");
                 for (Paqueteria p : paquete.getServiEntrega()) {
                     sortedListModel.addElement(p);
-                   // textArea3.append(p.toString() + "\n");
+                    // textArea3.append(p.toString() + "\n");
                     //textArea3.append("------------------------");
                 }
                 list3.setModel(sortedListModel);
@@ -228,12 +229,23 @@ public class Ventana {
                     JOptionPane.showMessageDialog(null,"Encontrado: ");
                     textArea1.setText(result.toString());
                 } else {
-                   JOptionPane.showMessageDialog(null,"No encontrado");
+                    JOptionPane.showMessageDialog(null,"No encontrado");
                 }
             }
 
         });
+        buscarButton1.addActionListener ( new ActionListener ( ) { // Buscar por cedula y estado de paquete
+            @Override
+            public void actionPerformed ( ActionEvent e ) {
+                String cedula = textField5.getText ( );
+                String estado = comboestadopedido.getSelectedItem ( ).toString ( );
+                String resultado = paquete.buscarPaquetesPorCedulaYEstado ( cedula, estado );
+                textArea2.setText ( resultado );
+
+            }
+        } );
     }
+
 
     public void limpiarDatos() {
         spinner1.setValue(0);
